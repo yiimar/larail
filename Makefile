@@ -1,5 +1,4 @@
-init: init-ci
-init-ci: docker-down-clear \
+init: docker-down-clear \
 	docker-pull docker-build docker-up \
 	project-init
 
