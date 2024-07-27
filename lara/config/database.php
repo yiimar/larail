@@ -1,8 +1,6 @@
 <?php
 
-use App\Domain\Skill\Application\Seeder\SkillSeeder;
-use App\Domain\Skill\Application\Seeder\SkillUserSeeder;
-use App\Domain\User\Application\Seeder\UserSeeder;
+use App\Module\Auth\User\Application\Seeder\UserSeeder;
 use Illuminate\Support\Str;
 
 return [
@@ -18,7 +16,6 @@ return [
     | is explicitly specified when you execute a query / statement.
     |
     */
-
     'default' => env('DB_CONNECTION', 'pgsql'),
 
     /*
@@ -31,7 +28,6 @@ return [
     | is supported by Laravel. You're free to add / remove connections.
     |
     */
-
     'connections' => [
 
         'sqlite' => [
@@ -124,7 +120,6 @@ return [
     | the migrations on disk haven't actually been run on the database.
     |
     */
-
     'migrations' => [
         'table' => 'migrations',
         'update_date_on_publish' => true,
@@ -140,24 +135,6 @@ return [
     | such as Memcached. You may define your connection settings here.
     |
     */
-
-    /*
-    |--------------------------------------------------------------------------
-    | Database Seeders
-    |--------------------------------------------------------------------------
-    |
-    | Below are all of the database seeders defined for your application.
-    | An example configuration is provided for each database system which
-    | is supported by Laravel. You're free to add / remove seeders.
-    |
-    */
-
-    'seeder' => [
-        UserSeeder::class,
-        SkillSeeder::class,
-        SkillUserSeeder::class,
-    ],
-
     'redis' => [
 
         'client' => env('REDIS_CLIENT', 'phpredis'),
@@ -186,5 +163,37 @@ return [
         ],
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Seeders
+    |--------------------------------------------------------------------------
+    |
+    | Below are all of the database seeders defined for your application.
+    | An example configuration is provided for each database system which
+    | is supported by Laravel. You're free to add / remove seeders.
+    |
+    */
+    'seeder' => [
+        UserSeeder::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Database Modules Migrations Paths
+    |--------------------------------------------------------------------------
+    |
+    | Below are all of the database modules migrations paths defined for your
+    | application.
+    | An example configuration is provided for each database system which
+    | is supported by Laravel. You're free to add / remove paths.
+    |
+    */
+    'migration_path' => [
+        '/lara/src/Core/Infrastructure/Database/Migration',
+        '/lara/src/User/Infrastructure/Database/Migration',
+        '/lara/src/Skill/Infrastructure/Database/Migration',
+    ],
+
 
 ];

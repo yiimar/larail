@@ -1,6 +1,8 @@
 <?php
 
+use App\Core\Infrastructure\Laravel11\Provider\AppServiceProvider;
+
 return [
-    App\Providers\AppServiceProvider::class,
-    App\Providers\RepositoryServiceProvider::class,
+    AppServiceProvider::class,
+//    \App\Skill\Providers\RepositoryServiceProvider::class,
 ];
