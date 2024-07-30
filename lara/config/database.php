@@ -190,7 +190,7 @@ return [
     |
     */
     'migration_path' => [
-        '/lara/src/Core/Infrastructure/Database/Migration',
+        '/lara/app/Core/Infrastructure/Database/Migration',
         '/lara/src/Module/Auth/User/Infrastructure/Database/Migration',
         '/lara/src/Module/Skill/Infrastructure/Database/Migration',
     ],
