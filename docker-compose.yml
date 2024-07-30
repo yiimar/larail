@@ -57,7 +57,7 @@ services:
             PHP_IDE_CONFIG: serverName="${SERVER_NAME}"
             DB_HOST: "${DB_HOST}"
             DB_USER: "${DB_USER}"
-            DB_PASSWORD: "${DB_PASSWORD}"
+            DB_PASSWORD_FILE: /run/secrets/lara_db_password
             DB_NAME: "${DB_NAME}"
 
             MAILER_HOST: mailer
@@ -74,6 +74,7 @@ services:
             - "${APP_VOLUMES_HOST}:${APP_VOLUMES_CONTAINER}"
         restart: unless-stopped
         secrets:
+            - lara_db_password
             - lara_mailer_password
             - sentry_dsn
             - jwt_encryption_key
@@ -102,7 +103,7 @@ services:
             DB_PORT: "${DB_PORT_CONTAINER}"
             DB_NAME: "${DB_NAME}"
             DB_USER: "${DB_USER}"
-            DB_PASSWORD: "${DB_PASSWORD}"
+            DB_PASSWORD_FILE: /run/secrets/lara_db_password
 
             MAILER_HOST: mailer
             MAILER_PORT: 1025
@@ -117,7 +118,7 @@ services:
         volumes:
             - "${APP_VOLUMES_HOST}:${APP_VOLUMES_CONTAINER}"
         secrets:
-#            - lara_db_password
+            - lara_db_password
             - lara_mailer_password
             - sentry_dsn
             - jwt_encryption_key
@@ -130,7 +131,9 @@ services:
         environment:
             POSTGRES_DB: "${DB_NAME}"
             POSTGRES_USER: "${DB_USER}"
-            POSTGRES_PASSWORD: "${DB_PASSWORD}"
+            POSTGRES_PASSWORD_FILE: /run/secrets/lara_db_password
+        secrets:
+            - lara_db_password
         volumes:
             - lara-postgres:/var/lib/postgresql/data
         restart: always
