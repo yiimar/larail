@@ -4,44 +4,54 @@ declare(strict_types=1);
 
 namespace App\Module\Auth\User\Domain\DomainModel\Entity\User;
 
-use App\Core\Domain\Entity\HasIdUlids;
+use App\Core\Domain\Trait\HasIdUlids;
+use App\Core\Infrastructure\Database\Enum\TableFields\TableUsers;
+use App\Core\Infrastructure\Database\Enum\TableNames;
 use App\Module\Auth\User\Infrastructure\Database\Factory\UserFactory;
-use App\Module\Skill\Domain\Entity\Skill;
+use App\Module\Profile\Domen\Profile;
+use Attribute;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
 /**
  * @property string $id
- * @property string $name
  * @property string $email
- * @property bool $email_verified_at
  * @property string $password
- * @property string $remember_token
- * @property string $created_at
- * @property string $updated_at
+ * @property string $join_confirm_token
+ * @property string $password_reset_token
+ * @property string $new_email
+ * @property string $new_email_token
+ * @property string $role
+ *
+ * @property-read \App\Module\Profile\Domen\Profile $profile
+ * @property-read \App\Module\Auth\User\Domain\DomainModel\Entity\User\UserStatus $statuses
  *
  * @author Yiimar
  */
 final class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens, HasIdUlids;
+    use HasApiTokens, HasFactory, HasIdUlids, Notifiable;
 
-    public const TABLE_NAME = 'users';
+    public const TABLE_NAME = TableNames::USER->value;
 
-    public const ATTR_ID = 'id';
-    public const ATTR_NAME = 'name';
-    public const ATTR_EMAIL = 'email';
-    public const ATTR_EMAIL_VERIFIED_AT = 'email_verified_at';
-    public const ATTR_PASSWORD = 'password';
-    public const ATTR_REMEMBER_TOKEN = 'remember_token';
-    public const ATTR_CREATED_AT = 'created_at';
-    public const ATTR_UPDATED_AT = 'updated_at';
+    public const ATTR_ID = TableUsers::FIELD_ID->value;
+    public const ATTR_EMAIL = TableUsers::FIELD_EMAIL->value;
+    public const ATTR_PASSWORD = TableUsers::FIELD_PASSWORD->value;
+    public const ATTR_JOIN_CONFIRM_TOKEN = TableUsers::FIELD_JOIN_CONFIRM_TOKEN->value;
+    public const ATTR_PASSWORD_RESET_TOKEN = TableUsers::FIELD_PASSWORD_RESET_TOKEN->value;
+    public const ATTR_NEW_EMAIL = TableUsers::FIELD_NEW_EMAIL->value;
+    public const ATTR_NEW_EMAIL_TOKEN = TableUsers::FIELD_NEW_EMAIL_TOKEN->value;
+    public const ATTR_ROLE = TableUsers::FIELD_ROLE->value;
 
-    public const RELATION_SKILLS = 'skills';
+    public const RELATION_STATUSES = TableUsers::RELATION_STATUSES->value;
+    public const RELATION_PROFILE = TableUsers::RELATION_PROFILE->value;
+
+    protected $table = self::TABLE_NAME;
 
     /**
      * The attributes that are mass assignable.
@@ -49,7 +59,6 @@ final class User extends Authenticatable
      * @var array<int, string, array>
      */
     protected $fillable = [
-        self::ATTR_NAME,
         self::ATTR_EMAIL,
         self::ATTR_PASSWORD,
     ];
@@ -61,12 +70,19 @@ final class User extends Authenticatable
      */
     protected $hidden = [
         self::ATTR_PASSWORD,
-        self::ATTR_REMEMBER_TOKEN,
+        self::ATTR_JOIN_CONFIRM_TOKEN,
+        self::ATTR_PASSWORD_RESET_TOKEN,
+        self::ATTR_NEW_EMAIL_TOKEN,
     ];
 
-    public function skills(): BelongsToMany
+    public function statuses(): BelongsToMany
     {
-        return $this->belongsToMany(Skill::class);
+        return $this->belongsToMany(UserStatus::class);
+    }
+
+    public function profile(): HasOne
+    {
+        return $this->hasOne(Profile::class);
     }
 
     /**
@@ -77,9 +93,20 @@ final class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            self::ATTR_EMAIL_VERIFIED_AT => 'datetime',
             self::ATTR_PASSWORD => 'hashed',
         ];
+    }
+
+    protected function id(): Attribute
+    {
+        return Attribute::make(
+            get: static fn (string $attribute) => UserId::fromString(
+                $attribute
+            ),
+            set: static fn (UserId $value) => [
+                self::ATTR_ID => $value->toString()
+            ],
+        );
     }
 
     /**
